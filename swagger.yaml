@@ -29,6 +29,21 @@ x-a127-services:
       passwordCheck:
         helper: helper
         function: passwordCheck
+   oauth2:
+    provider: volos-oauth-apigee
+    options:
+      key: *apigeeProxyKey
+      uri: *apigeeProxyUri
+      validGrantTypes:
+        - client_credentials
+        - authorization_code
+        - implicit_grant
+        - passwordCheck
+      tokenPaths:
+        authorize: /authorize
+        token: /accesstoken
+        invalidate: /invalidate
+        refresh: /refresh
 paths:
   /hello_person:
     # binds a127 app logic to a route

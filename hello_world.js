@@ -11,6 +11,9 @@
   It is a good idea to list the modules that your application depends on in the package.json in the project root
  */
 var util = require('util');
+var newline = require('os').EOL;
+var url = require('url');
+var str = "a";
 
 /*
  Once you 'require' a module you can reference the things that it exports.  These are defined in module.exports.
@@ -34,44 +37,51 @@ module.exports = {
   Param 1: a handle to the request object
   Param 2: a handle to the response object
  */
-function hello(req, res) {
+function hello(req, resa) {
 
-var GitHubApi = require("github");
+    var GitHubApi = require("github");
 
     var github = new GitHubApi({
         // required
         version: "3.0.0"
     });
 
-    //github.authenticate({
-    //    type: "basic",
-    //    username: "shawnmccarthy",
-    //    password: "password"
-    //});
+  var token = "df51eaa6c40968e5589f9ba047e818dc40b60aec";
 
-    var token = " K2KF4AoDGBvwYh1Mc6HNAb0lwoOj";
+  github.authenticate({
+    type: "oauth",
+    token: token
+  });
 
-    github.authenticate({
-        type: "oauth",
-        token: token
+
+  github.user.get({ user: ''} , function(err, res) {
+    console.log("GOT ERR?", err);
+    console.log("GOT RES?", res);
+    // str = 'x';
+    // str = String(res);
+    
+    // console.log("tetstst", str);
+
+    // if(str != '{}'){
+    //   str = "{No Querries Passed}";
+    //   console.log("FOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+    // }
+
+    // var githubInfo = String(local.res);
+
+    github.repos.getAll({}, function(err, res) {
+      console.log("GOT ERR?", err);
+      console.log("GOT RES?", res);
     });
 
-    github.user.get({ user: 'put your name here'} , function(err, res) {
-        console.log("GOT ERR?", err);
-        console.log("GOT RES?", res);
+      resa.json(res);
 
-        github.repos.getAll({}, function(err, res) {
-            console.log("GOT ERR?", err);
-            console.log("GOT RES?", res);
-        });
-    });
-}
+  });
 
   // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}
-  var name = req.swagger.params.name.value || 'stranger';
-  var hello = util.format('Hello, %s!', name);
+  // var name = req.swagger.params.name.value || 'stranger';
+  // var hello = util.format('Hello, %s!', name);
 
   // this sends back a JSON response which is a single string
-  res.json(hello);
 }
 
