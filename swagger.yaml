@@ -14,22 +14,23 @@ schemes:
 # format of bodies a client can send (Content-Type)
 consumes:
   - application/json
+  - application/x-www-form-urlencoded
 # format of the responses to the client (Accepts)
 produces:
   - application/json
 x-a127-config: 
   myremoteservice.key: &apigeeProxyKey CONFIGURED
   myremoteservice.uri: &apigeeProxyUri CONFIGURED
-x-a127-services: 
-   basic:
-     provider: volos-oauth-apigee
-     options:
-      key: *apigeeProxyKey
-      uri: *apigeeProxyUri
-      passwordCheck:
-        helper: helper
-        function: passwordCheck
-   oauth2:
+x-a127-services:   
+  basic:
+      provider: volos-oauth-apigee
+      options:
+        key: *apigeeProxyKey
+        uri: *apigeeProxyUri
+        passwordCheck:
+          helper: helper
+          function: passwordCheck    
+  oauth2:
     provider: volos-oauth-apigee
     options:
       key: *apigeeProxyKey
@@ -45,7 +46,7 @@ x-a127-services:
         invalidate: /invalidate
         refresh: /refresh
 paths:
-  /hello_person:
+  /hello:
     # binds a127 app logic to a route
     x-swagger-router-controller: hello_world
     x-a127-apply: {}
@@ -55,6 +56,33 @@ paths:
       operationId: hello
       security:
         - basic: []
+      parameters:
+        - name: name
+          in: query
+          description: The name of the person to whom to say hello
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/HelloWorldResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /hellooauth:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: hello_world
+    x-a127-apply: {}
+    get:
+      description: Returns 'Hello' to the caller
+      # used as the method name of the controller
+      operationId: hello
+      security:
+        - oauth2: []
       parameters:
         - name: name
           in: query
@@ -86,6 +114,12 @@ definitions:
     properties:
       message:
         type: string
-  securityDefinitions:
-    basic:
-    type: basic
+securityDefinitions:
+      basic:
+        type: basic
+      oauth2:
+        type: oauth2
+        scopes:
+          read: "allow read"
+        flow: application
+        tokenUrl: ignored
